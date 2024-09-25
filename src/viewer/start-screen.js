@@ -10,6 +10,7 @@ export default {
   template: /* HTML */ `
     <form class="is-relative p-5 bnb-start-screen" ref="form">
       <b-upload
+        id="dragDrop"
         @input="oninput($event)"
         ref="upload"
         accept="image/*"
@@ -21,6 +22,7 @@ export default {
         class="is-flex is-flex-direction-column is-align-items-center has-text-link bnb-start-screen__upload-controls"
       >
         <b-button
+          id="cameraButton"
           @click="$emit('camera-request')"
           type="is-link"
           icon-left="camera"
@@ -31,6 +33,7 @@ export default {
         </b-button>
         <span class="m-2">drop or</span>
         <b-button
+          id="uploadButton"
           @click="$refs['upload'].$el.click()"
           type="is-link"
           icon-left="image"
