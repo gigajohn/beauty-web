@@ -23,9 +23,38 @@ const resetPresets = () => {
   selectedPreset = null
 }
 
+const handleFolderUpload = (event) => {
+  const files = event.target.files;
+
+  for (const file of files) {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const imageUrl = e.target.result;
+        // Process the image content (e.g., display it)
+        console.log(`Image: ${file.name}`);
+        console.log(imageUrl);
+        //this.$emit("photo-uploaded", imageUrl)
+        //this.source = "photo"
+        
+        
+      };
+
+      reader.onerror = (e) => {
+        console.error(`Error reading file ${file.name}:`, e);
+      };
+
+      reader.readAsDataURL(file);
+    } else {
+      console.log(`Skipping non-image file: ${file.name}`);
+    }
+  }
+};
+
 export default {
   data: () => ({ presets: Config }),
-  methods: { applyPreset, resetPresets },
+  methods: { applyPreset, resetPresets, handleFolderUpload },
   components: { BnbSetting },
   template: /* HTML */ `
     <bnb-setting @reset="resetPresets">
@@ -39,6 +68,7 @@ export default {
         >
           {{ preset.name }}
         </b-button>
+        <input type="file" webkitdirectory @change="handleFolderUpload" />
       </div>
     </bnb-setting>
   `,
