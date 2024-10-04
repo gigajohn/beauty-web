@@ -68,7 +68,7 @@ export default {
         >
           {{ preset.name }}
         </b-button>
-        <input type="file" webkitdirectory @change="handleFolderUpload" />
+      <!--input id="folderUpload" type="file" webkitdirectory @change="handleFolderUpload" /!--->
       </div>
     </bnb-setting>
   `,

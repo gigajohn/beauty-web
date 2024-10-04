@@ -3,7 +3,11 @@ import FpsCounter from "./fps-counter.js"
 import BnbStartScreen from "./start-screen.js"
 
 export default {
-  data: () => ({ source: "none" }),
+  data: () => ({ 
+    source: "none",
+    imageFiles: [], // to store image files
+    fakewebcamInterval: null, // to store the interval
+  }),
   components: { BnbStartScreen, FpsCounter },
   methods: {
     onPhotoUploaded(photo) {
@@ -17,7 +21,50 @@ export default {
     onCloseRequest() {
       this.$emit("close-request")
       this.source = "none"
+      this.stopFakeWebcam()
     },
+
+    handleFolderUpload(event) {
+      const files = Array.from(event.target.files);
+      this.imageFiles = files.filter((file) => file.type.startsWith('image/'));
+
+      //start fake webcam
+      this.startFakeWebcam();
+    },
+
+    startFakeWebcam() {
+      if(this.imageFiles.length == 0){
+        console.log(`No image files to display`);
+        return;
+      }
+      this.source = "photo";
+
+      let index = 0;
+      let totalFrames = this.imageFiles.length;
+
+      this.fakewebcamInterval = setInterval(() => {
+        
+        //display the current frame
+        this.$emit("photo-uploaded", URL.createObjectURL(this.imageFiles[index]));
+
+        //Trigger a frame change event
+        document.dispatchEvent(new CustomEvent('frameChange', { detail: { frame: index } }));
+
+        //move to the next frame
+        index = (index + 1) % totalFrames;
+      }, 1000/1); // 1fps
+    },
+    stopFakeWebcam() {
+      if (this.fakewebcamInterval) {
+        clearInterval(this.fakewebcamInterval);
+        this.fakewebcamInterval = null;
+        this.source = "none";
+      }
+    },
+    clearUploadedPhotos() {
+      this.imageFiles = [];
+      this.stopFakeWebcam();
+    }
   },
   computed: {
     closeBtnText: ({ source }) => {
@@ -27,39 +74,40 @@ export default {
     },
   },
   template: /* HTML */ `
-    <div class="is-flex is-flex-direction-column is-relative bnb-viewer">
-      <slot></slot>
-      <bnb-start-screen
-        class="bnb-viewer__start_screen"
-        @photo-uploaded="onPhotoUploaded($event)"
-        @camera-request="onCameraRequest()"
-      />
-      <div class="bnb-viewer__controls">
-        <div class="p-2 bnb-viewer__controls-dock">
-          <b-button
-            class="pl-4 pr-4"
-            type="is-link"
-            icon-left="camera"
-            @click="$emit('screenshot-request')"
-            rounded
-            inverted
-          />
-        </div>
-        <fps-counter class="bnb-viewer__fps" />
+  <div class="is-flex is-flex-direction-column is-relative bnb-viewer">
+    <slot></slot>
+    <bnb-start-screen
+    v-if="source === 'none'"
+      class="bnb-viewer__start_screen"
+      @photo-uploaded="onPhotoUploaded($event)"
+      @camera-request="onCameraRequest()"
+    />
+    <div class="bnb-viewer__controls">
+      <div class="p-2 bnb-viewer__controls-dock">
+        <input type="file" webkitdirectory multiple @change="handleFolderUpload($event)" />
         <b-button
-          class="pl-3 pr-3 is-uppercase is-clipped bnb-viewer__close-btn"
-          type="is-small"
-          icon-left="clear"
-          :label="closeBtnText"
-          @click="onCloseRequest()"
+          class="pl-4 pr-4"
+          type="is-link"
+          icon-left="camera"
+          @click="$emit('screenshot-request')"
           rounded
+          inverted
         />
-      </div>
+        <b-button
+      <fps-counter class="bnb-viewer__fps" />
+      <b-button
+        class="pl-3 pr-3 is-uppercase is-clipped bnb-viewer__close-btn"
+        type="is-small"
+        icon-left="clear"
+        :label="closeBtnText"
+        @click="onCloseRequest()"
+        rounded
+      />
     </div>
-  `,
-}
+      </div>
+`,
 
-style(/* CSS */ `
+  style: /* CSS */ `
   .bnb-viewer {
     width: 100%;
   }
@@ -121,4 +169,5 @@ style(/* CSS */ `
     top: 1rem;
     left: 1rem;
   }
-`)
+`
+}
