@@ -91,35 +91,41 @@
           })
         }, 1000)
         //#endregion
+        document.addEventListener("framechanged", () => {
+          
+          console.log("Frame changed");
+          //takeScreenshot();
+        });
+
+        // Add your custom frame change listener here
+        player.addEventListener("framereceived", () => {
+          console.log("Frame changed");
+          // Add your custom logic here
+
+          
+
+        });
 
         const useWebcam = async () => {
           source = "webcam"
           player.use((input = new Webcam()))
           player.play()
         }
-        //const useImage = async (file) => {
-          //source = "image"
-          //player.use((input = new Image(file)))
-        //  player.play()
-        //}
+
         const useImage = async (file) => {
           source = "image";
-      
           const image = new Image(file);
           player.use((input = image));
           player.play();
-
-          
         }
 
         const getRecoder = () => {
           if (record) return record;
-
           record = new VideoRecorder(player);
           return record;
         }
 
-         const startRecord = () => {
+        const startRecord = () => {
           getRecorder().start();
         }
 
@@ -127,32 +133,10 @@
           return await getRecorder().stop();
         }
 
-        //Multile images at once using current available functions
-        //const useDirectory = async (files) => {
-        //    const imageFiles = files.filter(file => {
-        //    const extensions = ['jpg', 'jpeg', 'png', 'gif'];
-        //    const fileExtension = file.name.split('.').pop().toLowerCase();
-        //    return extensions.includes(fileExtension);
-        //    });
-        //  for (const file of imageFiles) {
-        //    // Process each image file here
-        //    console.log(file.name);
-        //    // Example: useImage(file);
-        //    useImage(file);
-        //    
-        //
-        //    takeScreenshot();
-        //  }
-        //}
-
-
-        const takeScreenshot = async () => {
+        const takeScreenshot = async (filename = "WebAR_Beauty") => {
           const capture = new ImageCapture(player)
-          download(await capture.takePhoto(), "WebAR_Beauty")
+          download(await capture.takePhoto(), filename)
         }
-        
-        
-
 
         const stop = async () => {
           input?.stop?.()

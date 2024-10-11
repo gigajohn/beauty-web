@@ -49,10 +49,9 @@ export default {
         this.$emit("photo-uploaded", URL.createObjectURL(this.imageFiles[index]));
 
         //Trigger a frame change event
-        document.dispatchEvent(new CustomEvent('frameChange', { detail: { frame: index } }));
-        console.log(`Frame changed to: ${index}`);
-        //this.recordFrame(index);
-        this.$emit('screenshot-request');
+        document.dispatchEvent(new CustomEvent('frameChange'));
+        this.$emit("screenshot-request"); //takes a screenshot
+      
 
         //move to the next frame
         index = (index + 1) % totalFrames;
@@ -68,8 +67,21 @@ export default {
     clearUploadedPhotos() {
       this.imageFiles = [];
       this.stopFakeWebcam();
+    },
+    toggleRecording() {
+      this.isRecording = !this.isRecording;
+      if (this.isRecording) {
+        this.$emit("start-recording");
+      } else {
+        this.$emit("stop-recording");
+      }
+    },
+    recordBtnText() {
+      return this.isRecording ? "Stop recording" : "Start recording";
     }
+
   },
+
   computed: {
     closeBtnText: ({ source }) => {
       if (source === "camera") return "Close camera"
