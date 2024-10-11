@@ -6,6 +6,7 @@ export default {
   data: () => ({ 
     source: "none",
     imageFiles: [], // to store image files
+    isRecording: false, // to store the recording state
     fakewebcamInterval: null, // to store the interval
   }),
   components: { BnbStartScreen, FpsCounter },
@@ -93,6 +94,14 @@ export default {
           rounded
           inverted
         />
+        <b-button
+          class="pl-4 pr-4"
+          type="is-link"
+          icon-left="record"
+          :label = 'recordBtnText'
+          @click = "$emit('start-recording')"
+          roundedscreenshot
+          
         <b-button
       <fps-counter class="bnb-viewer__fps" />
       <b-button

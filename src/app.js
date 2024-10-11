@@ -21,6 +21,7 @@ const BnbApp = {
         @photo-uploaded="$parent.$emit('photo-uploaded', $event)"
         @camera-request="$parent.$emit('camera-request')"
         @screenshot-request="$parent.$emit('screenshot-request')"
+        @start-recording="$parent.$emit('start-recording')"
         @close-request="$parent.$emit('close-request')"
       >
         <slot />

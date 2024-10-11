@@ -44,6 +44,7 @@
         Player,
         Module,
         ImageCapture,
+        VideoRecorder,
         Dom,
       } from "https://cdn.jsdelivr.net/npm/@banuba/webar@1.10.0/dist/BanubaSDK.browser.esm.min.js"
       import { zipSync as zip } from "https://cdn.jsdelivr.net/npm/fflate@0.6.4/esm/browser.min.js"
@@ -55,6 +56,7 @@
       !(async () => {
         let input
         let source
+        let record;
         const [player, modules, effect] = await Promise.all([
           Player.create({
             devicePixelRatio: 1,
@@ -110,6 +112,21 @@
           
         }
 
+        const getRecoder = () => {
+          if (record) return record;
+
+          record = new VideoRecorder(player);
+          return record;
+        }
+
+         const startRecord = () => {
+          getRecorder().start();
+        }
+
+        const stopRecord = async () => {
+          return await getRecorder().stop();
+        }
+
         //Multile images at once using current available functions
         //const useDirectory = async (files) => {
         //    const imageFiles = files.filter(file => {
@@ -133,6 +150,10 @@
           const capture = new ImageCapture(player)
           download(await capture.takePhoto(), "WebAR_Beauty")
         }
+        
+        
+
+
         const stop = async () => {
           input?.stop?.()
         }
@@ -170,6 +191,7 @@
         App.$on("camera-request", () => useWebcam().then(render))
         App.$on("photo-uploaded", (file) => useImage(file).then(render))
         App.$on("screenshot-request", takeScreenshot)
+        App.$on("record-start", startRecord)
         App.$on("close-request", stop), App.$on("close-request", unmount)
         App.$on("preset-download-request", (preset) =>
           download(appendToConfig(effect, presetToCode(preset)), "Makeup.zip")
