@@ -42,6 +42,7 @@ export default {
         >
           Upload photo
         </b-button>
+        
       </p>
     </form>
   `,

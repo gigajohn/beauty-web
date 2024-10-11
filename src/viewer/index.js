@@ -50,6 +50,9 @@ export default {
 
         //Trigger a frame change event
         document.dispatchEvent(new CustomEvent('frameChange', { detail: { frame: index } }));
+        console.log(`Frame changed to: ${index}`);
+        //this.recordFrame(index);
+        this.$emit('screenshot-request');
 
         //move to the next frame
         index = (index + 1) % totalFrames;
