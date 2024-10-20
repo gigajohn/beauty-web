@@ -36,6 +36,8 @@
 
     <script src="BanubaClientToken.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/exifr/dist/lite.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
     <script type="module">
       import {
         Effect,
@@ -135,6 +137,7 @@
 
         const takeScreenshot = async (filename = "WebAR_Beauty") => {
           const capture = new ImageCapture(player)
+          console.log()
           download(await capture.takePhoto(), filename)
         }
 
