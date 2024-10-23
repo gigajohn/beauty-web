@@ -134,11 +134,44 @@
         const stopRecord = async () => {
           return await getRecorder().stop();
         }
+        let preset;
+        let photoDetails;
 
-        const takeScreenshot = async (filename = "WebAR_Beauty") => {
+        const takeScreenshot = async () => {
           const capture = new ImageCapture(player)
-          console.log()
-          download(await capture.takePhoto(), filename)
+              if (!preset) {
+              console.error("Preset is not defined");
+              return;
+              }
+            let filename;
+              let eyeFlare;
+              let eyeWhitening;
+              let FaceMorph_Face;
+              let FaceMorph_Nose;
+              let FaceMorph_Eyes;
+              let FaceMorph_Lips;
+              let softlight;
+              let teethWhitening;
+              let name;
+              
+            try {
+              eyeFlare = preset.eyes.flare.strength;
+              eyeWhitening = preset.eyes.whitening.strength;
+              FaceMorph_Face = preset.morphs.face.strength;
+              FaceMorph_Nose = preset.morphs.nose.strength;
+              FaceMorph_Eyes = preset.morphs.eyes.strength;
+              FaceMorph_Lips = preset.morphs.lips.strength;
+              softlight = preset.softlight.strength;
+              teethWhitening = preset.teethWhitening.strength;
+              name = photoDetails;
+            } catch (e) {
+              console.error("Error parsing preset", e);
+            }
+            console.log(photoDetails)
+            filename = `${name}_eyeFlare_${eyeFlare}_eyeWhitening_${eyeWhitening}_FaceMorph_Face_${FaceMorph_Face}_FaceMorph_Nose_${FaceMorph_Nose}_FaceMorph_Eyes_${FaceMorph_Eyes}_FaceMorph_Lips_${FaceMorph_Lips}_softlight_${softlight}_teethWhitening_${teethWhitening}`;
+
+            name = `${filename ? filename : "default"}.png`
+          download(await capture.takePhoto(), name)
         }
 
         const stop = async () => {
@@ -174,6 +207,15 @@
           }
         }
         document.addEventListener("visibilitychange", visibilityChangeListener)
+        document.addEventListener("photoChange", (event) => {
+          photoDetails = event.detail;
+          console.log("Photo details:", photoDetails);
+          // Add your custom logic here to handle the photo details
+        });
+
+        window.addEventListener("presetApplied", function (e) {
+          preset = e.detail;
+        })
 
         App.$on("camera-request", () => useWebcam().then(render))
         App.$on("photo-uploaded", (file) => useImage(file).then(render))

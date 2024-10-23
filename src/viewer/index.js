@@ -50,12 +50,12 @@ export default {
 
         //Trigger a frame change event
         document.dispatchEvent(new CustomEvent('frameChange'));
-        this.$emit("screenshot-request"); //takes a screenshot
-      
+        document.dispatchEvent(new CustomEvent('photoChange', { detail: this.imageFiles[index].name }));
+        this.$emit("screenshot-request"); // takes a screenshot
 
-        //move to the next frame
+        // move to the next frame
         index = (index + 1) % totalFrames;
-      }, 1000/1); // 1fps
+            }, 1000 / 1); // 1fps
     },
     stopFakeWebcam() {
       if (this.fakewebcamInterval) {

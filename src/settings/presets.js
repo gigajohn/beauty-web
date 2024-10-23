@@ -13,6 +13,10 @@ const applyPreset = (preset) => {
   Store.reset();
 
   for (const [name, value] of Object.entries(selectedPreset)) stores[name].update(value);
+
+  // Emit the current preset to other documents
+  const event = new CustomEvent("presetApplied", { detail: selectedPreset });
+  window.dispatchEvent(event);
 };
 
 const resetPresets = () => {
