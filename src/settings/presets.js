@@ -25,7 +25,10 @@ const resetPresets = () => {
   for (const [name, value] of Object.entries(selectedPreset))
     if (stores[name]?.isEqual(value)) stores[name].reset(...Object.keys(value));
 
+  
   selectedPreset = null;
+  const event = new CustomEvent("presetApplied", { detail: selectedPreset });
+  window.dispatchEvent(event);
 };
 
 const handelZipFilterUpload = (event) => {

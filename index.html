@@ -139,20 +139,17 @@
 
         const takeScreenshot = async () => {
           const capture = new ImageCapture(player)
-              if (!preset) {
-              console.error("Preset is not defined");
-              return;
-              }
-            let filename;
-              let eyeFlare;
-              let eyeWhitening;
-              let FaceMorph_Face;
-              let FaceMorph_Nose;
-              let FaceMorph_Eyes;
-              let FaceMorph_Lips;
-              let softlight;
-              let teethWhitening;
-              let name;
+             
+            let filename =0;
+              let eyeFlare = 0;
+              let eyeWhitening =0;
+              let FaceMorph_Face =0;
+              let FaceMorph_Nose =0;
+              let FaceMorph_Eyes=0;
+              let FaceMorph_Lips=0;
+              let softlight=0;
+              let teethWhitening=0;
+              let name = photoDetails;
               
             try {
               eyeFlare = preset.eyes.flare.strength;
@@ -163,15 +160,21 @@
               FaceMorph_Lips = preset.morphs.lips.strength;
               softlight = preset.softlight.strength;
               teethWhitening = preset.teethWhitening.strength;
-              name = photoDetails;
+              //name = photoDetails;
             } catch (e) {
               console.error("Error parsing preset", e);
             }
             console.log(photoDetails)
-            filename = `${name}_eyeFlare_${eyeFlare}_eyeWhitening_${eyeWhitening}_FaceMorph_Face_${FaceMorph_Face}_FaceMorph_Nose_${FaceMorph_Nose}_FaceMorph_Eyes_${FaceMorph_Eyes}_FaceMorph_Lips_${FaceMorph_Lips}_softlight_${softlight}_teethWhitening_${teethWhitening}`;
+            if (preset != null && photoDetails != null) {
+              
+              filename = `${name}_eyeFlare_${eyeFlare}_eyeWhitening_${eyeWhitening}_FaceMorph_Face_${FaceMorph_Face}_FaceMorph_Nose_${FaceMorph_Nose}_FaceMorph_Eyes_${FaceMorph_Eyes}_FaceMorph_Lips_${FaceMorph_Lips}_softlight_${softlight}_teethWhitening_${teethWhitening}`;
+            } else {
+              console.log("Preset and photo details are null");
+              filename = `${name ? name : "default"}`
 
-            name = `${filename ? filename : "default"}.png`
-          download(await capture.takePhoto(), name)
+            }
+             
+          download(await capture.takePhoto(), filename);
         }
 
         const stop = async () => {
@@ -218,7 +221,10 @@
         })
 
         App.$on("camera-request", () => useWebcam().then(render))
-        App.$on("photo-uploaded", (file) => useImage(file).then(render))
+        App.$on("photo-uploaded", (file) => {
+          photoDetails = file.name; // Store photo name
+          useImage(file).then(render);
+        })
         App.$on("screenshot-request", takeScreenshot)
         App.$on("record-start", startRecord)
         App.$on("close-request", stop), App.$on("close-request", unmount)
