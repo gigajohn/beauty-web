@@ -59,6 +59,8 @@
         let input
         let source
         let record;
+        let preset;
+        let photoDetails;
         const [player, modules, effect] = await Promise.all([
           Player.create({
             devicePixelRatio: 1,
@@ -93,16 +95,13 @@
           })
         }, 1000)
         //#endregion
-        document.addEventListener("framechanged", () => {
-          
-          console.log("Frame changed");
-          //takeScreenshot();
-        });
+        
 
         // Add your custom frame change listener here
         player.addEventListener("framereceived", () => {
           console.log("Frame changed");
           // Add your custom logic here
+          console.log(preset);
 
           
 
@@ -134,22 +133,66 @@
         const stopRecord = async () => {
           return await getRecorder().stop();
         }
-        let preset;
-        let photoDetails;
-
+      
+        
+//
+        //const takeScreenshot = async () => {
+        //  const capture = new ImageCapture(player)
+        //     
+        //  let filename;
+        //  let eyeFlare = 0;
+        //  let eyeWhitening =0;
+        //  let FaceMorph_Face =0;
+        //  let FaceMorph_Nose =0;
+        //  let FaceMorph_Eyes=0;
+        //  let FaceMorph_Lips=0;
+        //  let softlight=0;
+        //  let teethWhitening=0;
+        //  let name = photoDetails;
+        //    
+        //  try {
+        //    eyeFlare = preset.eyes.flare.strength;
+        //    eyeWhitening = preset.eyes.whitening.strength;
+        //    FaceMorph_Face = preset.morphs.face.strength;
+        //    FaceMorph_Nose = preset.morphs.nose.strength;
+        //    FaceMorph_Eyes = preset.morphs.eyes.strength;
+        //    FaceMorph_Lips = preset.morphs.lips.strength;
+        //    softlight = preset.softlight.strength;
+        //    teethWhitening = preset.teethWhitening.strength;
+        //    name = photoDetails;
+        //  } catch (e) {
+        //    console.error("Error parsing preset", e);
+        //  }
+        //  console.log(photoDetails)
+        //  console.log('preset', preset);
+        //  console.log('name', eyeFlare);
+        //  
+        //    
+        //  filename = `${name}_eyeFlare_${eyeFlare}_eyeWhitening_${eyeWhitening}_FaceMorph_Face_${FaceMorph_Face}_FaceMorph_Nose_${FaceMorph_Nose}_FaceMorph_Eyes_${FaceMorph_Eyes}_FaceMorph_Lips_${FaceMorph_Lips}_softlight_${softlight}_teethWhitening_${teethWhitening}`;
+        //  
+        //
+        //    
+        //     
+        //  download(await capture.takePhoto(), filename);
+        //}
         const takeScreenshot = async () => {
+          photoDetails;
+
           const capture = new ImageCapture(player)
-             
-            let filename =0;
-              let eyeFlare = 0;
-              let eyeWhitening =0;
-              let FaceMorph_Face =0;
-              let FaceMorph_Nose =0;
-              let FaceMorph_Eyes=0;
-              let FaceMorph_Lips=0;
-              let softlight=0;
-              let teethWhitening=0;
-              let name = photoDetails;
+              if (!preset) {
+              console.error("Preset is not defined");
+              return;
+              }
+             let filename;
+              let eyeFlare;
+              let eyeWhitening;
+              let FaceMorph_Face;
+              let FaceMorph_Nose;
+              let FaceMorph_Eyes;
+              let FaceMorph_Lips;
+              let softlight;
+              let teethWhitening;
+              let name;
               
             try {
               eyeFlare = preset.eyes.flare.strength;
@@ -160,22 +203,27 @@
               FaceMorph_Lips = preset.morphs.lips.strength;
               softlight = preset.softlight.strength;
               teethWhitening = preset.teethWhitening.strength;
-              //name = photoDetails;
+              filename = photoDetails;
             } catch (e) {
               console.error("Error parsing preset", e);
             }
-            console.log(photoDetails)
-            if (preset != null && photoDetails != null) {
-              
-              filename = `${name}_eyeFlare_${eyeFlare}_eyeWhitening_${eyeWhitening}_FaceMorph_Face_${FaceMorph_Face}_FaceMorph_Nose_${FaceMorph_Nose}_FaceMorph_Eyes_${FaceMorph_Eyes}_FaceMorph_Lips_${FaceMorph_Lips}_softlight_${softlight}_teethWhitening_${teethWhitening}`;
-            } else {
-              console.log("Preset and photo details are null");
-              filename = `${name ? name : "default"}`
+            
+            eyeFlare = (eyeFlare || 0);
+            eyeWhitening = (eyeWhitening || 0);
+            FaceMorph_Face = (FaceMorph_Face || 0);
+            FaceMorph_Nose = (FaceMorph_Nose || 0);
+            FaceMorph_Eyes = (FaceMorph_Eyes || 0);
+            FaceMorph_Lips = (FaceMorph_Lips || 0);
+            softlight = (softlight || 0);
+            teethWhitening = (teethWhitening || 0);
 
-            }
-             
-          download(await capture.takePhoto(), filename);
+            console.log(photoDetails)
+            filename = `${photoDetails}_eyeFlare_${eyeFlare}_eyeWhitening_${eyeWhitening}_FaceMorph_Face_${FaceMorph_Face}_FaceMorph_Nose_${FaceMorph_Nose}_FaceMorph_Eyes_${FaceMorph_Eyes}_FaceMorph_Lips_${FaceMorph_Lips}_softlight_${softlight}_teethWhitening_${teethWhitening}`;
+
+            name = `${filename ? filename : "default"}.png`
+          download(await capture.takePhoto(), name)
         }
+
 
         const stop = async () => {
           input?.stop?.()
@@ -218,6 +266,7 @@
 
         window.addEventListener("presetApplied", function (e) {
           preset = e.detail;
+          console.log("Preset applied:", preset);
         })
 
         App.$on("camera-request", () => useWebcam().then(render))

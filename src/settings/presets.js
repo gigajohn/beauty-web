@@ -16,6 +16,7 @@ const applyPreset = (preset) => {
 
   // Emit the current preset to other documents
   const event = new CustomEvent("presetApplied", { detail: selectedPreset });
+  console.log("presetApplied", selectedPreset);
   window.dispatchEvent(event);
 };
 
@@ -31,29 +32,8 @@ const resetPresets = () => {
   window.dispatchEvent(event);
 };
 
-const handelZipFilterUpload = (event) => {
-  const zipFile = event.target.files[0];
-  const reader = new FileReader();
 
-  reader.onload = async (e) => {
-    const buffer = e.target.result;
-    const zip = new JSZip();
-    const files = await zip.loadAsync(buffer);
 
-    this.zipFiles = Object.keys(files.files);
-
-    reader.onerror = (e) => {
-      console.error(`Error reading file ${zipFile.name}:`, e);
-    };
-
-    for (const path in files.files) {
-      const file = files.files[path];
-      console.log(`File: ${path}`);
-    }
-  };
-
-  reader.readAsArrayBuffer(zipFile);
-};
 
 const handleCsvUpload = (event) => {
   const file = event.target.files[0];
@@ -86,7 +66,9 @@ const handleCsvUpload = (event) => {
           morphs: { face: { strength:  row.FaceMorph_face}, nose: { strength: row.FaceMorph_nose}, eyes:{strength: row.FaceMorph_eyes},lips: { strength: row.FaceMorph_lips }, eyes: { strength: row.FaceMorph_eyes }}, 
           teethWhitening: { strength: row.Teeth_whitening },  
           eyes: {flare: {strength: row.Eyes_flare}, whitening: {strength: row.Eyes_whitening}},
-          skin: {softening: {strength: row.Skin_softening}  }})
+          skin: {softening: {strength: row.Skin_softening} }, 
+          softlight: {strength: row.Softlight} 
+       })
       });
     },
     error: (error) => {
@@ -106,7 +88,6 @@ export default {
   methods: {
     applyPreset,
     resetPresets,
-    handelZipFilterUpload,
     handleCsvUpload,
   },
   components: { BnbSetting },
@@ -122,7 +103,7 @@ export default {
         >
           {{ preset.name }}
         </b-button>
-        <input id="filterUpload" type="file" accept=".zip" @change="handelZipFilterUpload" />
+        
         <input id="csvUpload" type="file" accept=".csv" @change="handleCsvUpload" />
         <b-button
           v-if="showZipButton"
